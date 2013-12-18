@@ -72,6 +72,8 @@ public class CancelActionComponent extends UIComponent {
       WikiPageParams pageParams = Utils.getCurrentWikiPageParams();
       String currentUser = org.exoplatform.wiki.utils.Utils.getCurrentUser();
       org.exoplatform.wiki.utils.Utils.removeLogEditPage(pageParams, currentUser);
+      UIWikiPortlet wikiPortlet = event.getSource().getAncestorOfType(UIWikiPortlet.class);
+      wikiPortlet.changeMode(WikiMode.VIEW);
       context.sendRedirect(Utils.getURLFromParams(Utils.getCurrentWikiPageParams()));
     }
   }
