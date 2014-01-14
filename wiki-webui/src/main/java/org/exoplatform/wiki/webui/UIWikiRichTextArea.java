@@ -43,7 +43,7 @@ public class UIWikiRichTextArea extends UIContainer {
   public UIWikiRichTextArea(){
     UIFormRichtextInput richTextAreaInput = 
         new UIFormRichtextInput(RICHTEXT_AREA_INPUT, RICHTEXT_AREA_INPUT, "");
-    richTextAreaInput.setToolbar(UIFormRichtextInput.FULL_TOOLBAR);
+    richTextAreaInput.setToolbar(UIFormRichtextInput.DEFAULT_TOOLBAR);
     richTextAreaInput.setWidth("100%");
     addChild(richTextAreaInput);
   }
