@@ -264,7 +264,8 @@ public class WikiRestServiceImpl implements WikiRestService, ResourceContainer {
                               @QueryParam(TreeNode.PATH) String path,
                               @QueryParam(TreeNode.CURRENT_PATH) String currentPath,
                               @QueryParam(TreeNode.SHOW_EXCERPT) Boolean showExcerpt,
-                              @QueryParam(TreeNode.DEPTH) String depth) {
+                              @QueryParam(TreeNode.DEPTH) String depth,
+                              @QueryParam(TreeNode.SHOW_DESCENDANT) Boolean showDes) {
     try {
       List<JsonNodeData> responseData = new ArrayList<JsonNodeData>();
       HashMap<String, Object> context = new HashMap<String, Object>();
@@ -291,6 +292,7 @@ public class WikiRestServiceImpl implements WikiRestService, ResourceContainer {
       context.put(TreeNode.SELECTED_PAGE, page);
       
       context.put(TreeNode.SHOW_EXCERPT, showExcerpt);
+      context.put(TreeNode.SHOW_DESCENDANT, showDes);
       if (type.equalsIgnoreCase(TREETYPE.ALL.toString())) {
         Stack<WikiPageParams> stk = Utils.getStackParams(page);
         context.put(TreeNode.STACK_PARAMS, stk);

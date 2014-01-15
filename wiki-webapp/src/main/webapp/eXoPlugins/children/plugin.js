@@ -1,3 +1,19 @@
+generateTree = function(src) {
+	var ret = "<li>";
+	ret += "<span class='wikilink'>";
+	var path = decodeURIComponent(src.path);
+	ret += "<a href='" + path.substring(path.lastIndexOf("/") + 1) + "'>"
+	ret += src.name; 
+	ret += "</a>";
+	ret += "</span>";
+	if (src.children && src.children.length > 0) {
+		for (var i = 0; i < src.children.length; i++) {
+			ret += "<ul>" + generateTree(src.children[i]) + "</ul>";
+		}
+	}
+	return ret + "</li>";
+}
+
 CKEDITOR.plugins.add('children', {
 	requires: 'widget',
 	icons: 'children',
@@ -35,18 +51,53 @@ CKEDITOR.plugins.add('children', {
 			},			
 			data: function() {
 				//alert(editor.document.getDocumentElement().getElementsByTag("h1").count());
-				var content = "ChildrenNum: " + this.data.childrenNum + "<br/>" + 
-								"Depth: " + this.data.depth + "<br/>" +
-								"Descendant: " + this.data.descendant + "<br/>" +
-								"Excerpt: " + this.data.excerpt + "<br/>" +
-								"Parent: " + this.data.parent + "<br/>";
 				editor.widgets.children = this;
 				if (editor.widgets.children && editor.widgets.children.data ) {
+					//prepare data
+					var content = "ChildrenNum: " + this.data.childrenNum + "<br/>" + 
+					"Depth: " + this.data.depth + "<br/>" +
+					"Descendant: " + this.data.descendant + "<br/>" +
+					"Excerpt: " + this.data.excerpt + "<br/>" +
+					"Parent: " + this.data.parent + "<br/>" +
+					eXo.wiki.UIWikiPortlet.pageType + ":" + eXo.wiki.UIWikiPortlet.pageOwner +
+					":" + eXo.wiki.UIWikiPortlet.pageId;
+					var restUrl = "/" + eXo.env.rest.context + "/wiki/tree/CHILDREN?path=" + 
+					eXo.wiki.UIWikiPortlet.pageType + "/" + 
+					eXo.wiki.UIWikiPortlet.pageOwner + "/" + 
+					(this.data.parent ? this.data.parent:eXo.wiki.UIWikiPortlet.pageId) + 
+					"&excerpt=" + (this.data.excerpt && this.data.excerpt.toLowerCase() == "yes" ? "true" : "false") +
+					"&depth=" + (this.data.depth?this.data.depth : 1000) +
+					"&showDes=" + ((this.data.descendant && this.data.descendant.toLowerCase() == "yes" || !this.data.descendant) ? "true" : "false");
+					$.ajax({
+						async : true,
+						url : restUrl,
+						type : 'GET',
+						data : '',
+						success : function(data) {
+							var content = "<ul>";
+							if (data.jsonList && data.jsonList.length > 0) {
+								for (var i = 0; i < data.jsonList.length; i++) {
+									if (editor.widgets.children.data.childrenNum && editor.widgets.children.data.childrenNum == i) break;
+									content += generateTree(data.jsonList[i]);
+								}
+							}
+							content += "</ul>";
+							
+							var children = editor.widgets.children;
+							var childrenContent = children.element.find(".children-content").getItem(0);
+							if (childrenContent) {
+								childrenContent.setHtml(content);
+							}
+						}
+					});
+					//insert data
 					var children = editor.widgets.children;
 					var childrenContent = children.element.find(".children-content").getItem(0);
 					if (childrenContent) {
 						childrenContent.setHtml(content);
 					}
+					
+					//save preferences
 					var childrenDiv = children.element.find("div.children-content").getItem(0);
 					if (childrenDiv) {
 						childrenDiv.$.setAttribute('childrenNum', children.data.childrenNum);

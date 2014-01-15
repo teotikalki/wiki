@@ -370,6 +370,13 @@ UIWikiPortlet.prototype.getKeynum = function(event) {
 UIWikiPortlet.prototype.ajaxRedirect = function(url) {
   url =  url.replace(/&amp;/g, "&") ;
   window.location.href = url ;
+};
+
+UIWikiPortlet.prototype.setCurrentPage = function(type, owner, id) {
+  var me = eXo.wiki.UIWikiPortlet;
+  me.pageType = type;
+  me.pageOwner = owner;
+  me.pageId = id;
 }
 
 eXo.wiki.UIWikiPortlet = new UIWikiPortlet();

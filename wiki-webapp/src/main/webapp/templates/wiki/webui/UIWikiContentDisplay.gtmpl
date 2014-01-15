@@ -2,10 +2,13 @@
   def rcontext = _ctx.getRequestContext() ;  
   
   def requireJs = rcontext.getJavascriptManager().getRequireJS();
+  def pageParams = uicomponent.getCurrentPageParams();
   requireJs.require("SHARED/UIWikiPortlet", "UIWikiPortlet");
   requireJs.addScripts("UIWikiPortlet.makeRenderingErrorsExpandable('"+uicomponent.id+ "');");
   requireJs.addScripts("UIWikiPortlet.decorateSpecialLink('"+uicomponent.id+ "');");
   requireJs.addScripts("UIWikiPortlet.initMacros();");
+  requireJs.addScripts("UIWikiPortlet.setCurrentPage('"+pageParams.getType()
+                       + "','" + pageParams.getOwner() + "','" + pageParams.getPageId() + "');");
   
   String msg = _ctx.appRes("UIWikiContentDisplay.msg.invalid-characters-in-link");
   msg = msg.replace("{0}",uicomponent.INVALID_CHARACTERS);
