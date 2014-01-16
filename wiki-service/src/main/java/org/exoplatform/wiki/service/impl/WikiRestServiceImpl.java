@@ -18,6 +18,7 @@ package org.exoplatform.wiki.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -246,6 +247,64 @@ public class WikiRestServiceImpl implements WikiRestService, ResourceContainer {
     }
     return Response.ok().build();
   }
+  
+  /**
+   * Display the current tree of a wiki based on is path
+   * @param type It can be a Portal, Group, User type of wiki
+   * @param path Contains the path of the wiki page
+   * @param currentPath Contains the path of the current wiki page
+   * @param showExcerpt Boolean to display or not the excerpt
+   * @param depth Defined the depth of the children we want to display
+   * @return List of descendants including the page itself.
+   * @throws Exception 
+   */
+
+  public List<JsonNodeData> getTreeDataNodes(String type,
+                              String path,
+                              String currentPath,
+                              Boolean showExcerpt,
+                              String depth,
+                              Boolean showDes) throws Exception {
+    List<JsonNodeData> responseData = new ArrayList<JsonNodeData>();
+    HashMap<String, Object> context = new HashMap<String, Object>();
+    
+    if (currentPath != null){
+      currentPath = URLDecoder.decode(currentPath, "utf-8");
+      context.put(TreeNode.CURRENT_PATH, currentPath);
+      WikiPageParams currentPageParam = TreeUtils.getPageParamsFromPath(currentPath);
+      PageImpl currentPage = (PageImpl) wikiService.getPageById(currentPageParam.getType(), currentPageParam.getOwner(), currentPageParam.getPageId());
+      context.put(TreeNode.CURRENT_PAGE, currentPage);
+    }
+    
+    // Put select page to context
+    path = URLDecoder.decode(path, "utf-8");
+    context.put(TreeNode.PATH, path);
+    WikiPageParams pageParam = TreeUtils.getPageParamsFromPath(path);
+    PageImpl page = (PageImpl) wikiService.getPageById(pageParam.getType(), pageParam.getOwner(), pageParam.getPageId());
+    if (page == null) {
+      log.warn("User [{}] can not get wiki path [{}]. Wiki Home is used instead",
+               ConversationState.getCurrent().getIdentity().getUserId(), path);
+      page = (PageImpl) wikiService.getPageById(pageParam.getType(), pageParam.getOwner(), pageParam.WIKI_HOME);
+    }
+    
+    context.put(TreeNode.SELECTED_PAGE, page);
+    
+    context.put(TreeNode.SHOW_EXCERPT, showExcerpt);
+    context.put(TreeNode.SHOW_DESCENDANT, showDes);
+    if (type.equalsIgnoreCase(TREETYPE.ALL.toString())) {
+      Stack<WikiPageParams> stk = Utils.getStackParams(page);
+      context.put(TreeNode.STACK_PARAMS, stk);
+      responseData = getJsonTree(pageParam, context);
+    } else if (type.equalsIgnoreCase(TREETYPE.CHILDREN.toString())) {
+      // Get children only
+      if (depth == null)
+        depth = "1";
+      context.put(TreeNode.DEPTH, depth);
+      responseData = getJsonDescendants(pageParam, context);
+    }
+
+    return responseData;
+  }  
 
   /**
    * Display the current tree of a wiki based on is path
@@ -267,43 +326,7 @@ public class WikiRestServiceImpl implements WikiRestService, ResourceContainer {
                               @QueryParam(TreeNode.DEPTH) String depth,
                               @QueryParam(TreeNode.SHOW_DESCENDANT) Boolean showDes) {
     try {
-      List<JsonNodeData> responseData = new ArrayList<JsonNodeData>();
-      HashMap<String, Object> context = new HashMap<String, Object>();
-      
-      if (currentPath != null){
-        currentPath = URLDecoder.decode(currentPath, "utf-8");
-        context.put(TreeNode.CURRENT_PATH, currentPath);
-        WikiPageParams currentPageParam = TreeUtils.getPageParamsFromPath(currentPath);
-        PageImpl currentPage = (PageImpl) wikiService.getPageById(currentPageParam.getType(), currentPageParam.getOwner(), currentPageParam.getPageId());
-        context.put(TreeNode.CURRENT_PAGE, currentPage);
-      }
-      
-      // Put select page to context
-      path = URLDecoder.decode(path, "utf-8");
-      context.put(TreeNode.PATH, path);
-      WikiPageParams pageParam = TreeUtils.getPageParamsFromPath(path);
-      PageImpl page = (PageImpl) wikiService.getPageById(pageParam.getType(), pageParam.getOwner(), pageParam.getPageId());
-      if (page == null) {
-        log.warn("User [{}] can not get wiki path [{}]. Wiki Home is used instead",
-                 ConversationState.getCurrent().getIdentity().getUserId(), path);
-        page = (PageImpl) wikiService.getPageById(pageParam.getType(), pageParam.getOwner(), pageParam.WIKI_HOME);
-      }
-      
-      context.put(TreeNode.SELECTED_PAGE, page);
-      
-      context.put(TreeNode.SHOW_EXCERPT, showExcerpt);
-      context.put(TreeNode.SHOW_DESCENDANT, showDes);
-      if (type.equalsIgnoreCase(TREETYPE.ALL.toString())) {
-        Stack<WikiPageParams> stk = Utils.getStackParams(page);
-        context.put(TreeNode.STACK_PARAMS, stk);
-        responseData = getJsonTree(pageParam, context);
-      } else if (type.equalsIgnoreCase(TREETYPE.CHILDREN.toString())) {
-        // Get children only
-        if (depth == null)
-          depth = "1";
-        context.put(TreeNode.DEPTH, depth);
-        responseData = getJsonDescendants(pageParam, context);
-      }
+      List<JsonNodeData> responseData = getTreeDataNodes(type, path, currentPath, showExcerpt, depth, showDes);
       return Response.ok(new BeanToJsons(responseData), MediaType.APPLICATION_JSON).cacheControl(cc).build();
     } catch (Exception e) {
       if (log.isErrorEnabled()) {

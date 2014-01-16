@@ -82,18 +82,19 @@ public class PageRenderingCacheServiceImpl implements PageRenderingCacheService 
     String renderedContent = StringUtils.EMPTY;
     try {
       PageImpl page = (PageImpl) wikiService.getPageById(param.getType(), param.getOwner(), param.getPageId());
-      boolean supportSectionEdit = page.hasPermission(PermissionType.EDITPAGE);
-      MarkupKey key = new MarkupKey(new WikiPageParams(param.getType(), param.getOwner(), param.getPageId()), page.getSyntax(), targetSyntax, supportSectionEdit);
-      //get content from cache only when page is not uncached mixin
-      if (page.getUncachedMixin() == null) {
-        MarkupData cachedData = renderingCache.get(new Integer(key.hashCode()));
-        if (cachedData != null) {
-          return cachedData.build();
-        }
-      }
+//      boolean supportSectionEdit = page.hasPermission(PermissionType.EDITPAGE);
+//      MarkupKey key = new MarkupKey(new WikiPageParams(param.getType(), param.getOwner(), param.getPageId()), page.getSyntax(), targetSyntax, supportSectionEdit);
+//      //get content from cache only when page is not uncached mixin
+//      if (page.getUncachedMixin() == null) {
+//        MarkupData cachedData = renderingCache.get(new Integer(key.hashCode()));
+//        if (cachedData != null) {
+//          return cachedData.build();
+//        }
+//      }
       String markup = page.getContent().getText();
-      renderedContent = renderingService.render(markup, page.getSyntax(), targetSyntax, supportSectionEdit);
-      renderingCache.put(new Integer(key.hashCode()), new MarkupData(renderedContent));
+      //renderedContent = renderingService.render(markup, page.getSyntax(), targetSyntax, supportSectionEdit);
+      renderedContent = renderingService.decodeHtml(markup);
+//      renderingCache.put(new Integer(key.hashCode()), new MarkupData(renderedContent));
     } catch (Exception e) {
       LOG.error(String.format("Failed to get rendered content of page [%s:%s:%s] in syntax %s", param.getType(), param.getOwner(), param.getPageId(), targetSyntax), e);
     }
@@ -205,6 +206,7 @@ public class PageRenderingCacheServiceImpl implements PageRenderingCacheService 
   public Set<String> getUncachedMacroes() {
     return new HashSet<String>(uncachedMacroes);
   }
+
   
   public void invalidateUUIDCache(WikiPageParams param) {
     MarkupKey key = new MarkupKey(param, 

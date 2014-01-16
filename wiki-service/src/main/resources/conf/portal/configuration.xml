@@ -330,6 +330,22 @@
     </component-plugin>    
   </external-component-plugins>
   
+  <external-component-plugins>
+    <target-component>org.exoplatform.wiki.rendering.RenderingService</target-component>
+    <component-plugin>
+      <name>addWidgetPlugin</name>
+      <set-method>addWidgetPlugin</set-method>
+      <type>org.exoplatform.wiki.rendering.widget.ChildrenWidgetPlugin</type>
+      <description>Add the children widget plugin</description>
+      <init-params>
+      <value-param>
+        <name>widgetDivClass</name>
+        <value>children-content</value>
+      </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>    
+  
   <import>jar:/conf/portal/cache-configuration.xml</import>
   
 </configuration>

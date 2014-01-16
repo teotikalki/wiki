@@ -138,16 +138,17 @@ public class SavePageActionComponent extends UIComponent {
         }
   
         String title = titleInput.getValue().trim();
-        if (wikiRichTextArea.isRendered()) {
-          String htmlContent = wikiRichTextArea.getUIFormTextAreaInput().getValue();
-          String markupContent = renderingService.render(htmlContent,
-                                                         Syntax.XHTML_1_0.toIdString(),
-                                                         syntaxId,
-                                                         false);
-          markupInput.setValue(markupContent);
-        }
-        String markup = (markupInput.getValue() == null) ? "" : markupInput.getValue();
-        markup = markup.trim();
+//        if (wikiRichTextArea.isRendered()) {
+//          String htmlContent = wikiRichTextArea.getUIFormTextAreaInput().getValue();
+//          String markupContent = renderingService.render(htmlContent,
+//                                                         Syntax.XHTML_1_0.toIdString(),
+//                                                         syntaxId,
+//                                                         false);
+//          markupInput.setValue(markupContent);
+//        }
+        String markup = wikiRichTextArea.getUIFormTextAreaInput().getValue();
+        markup = markup == null ? "" : markup.trim();
+//        markup = renderingService.encodeHtml(markup);
   
         String newPageId = TitleResolver.getId(title, false);
         pageParams.setPageId(newPageId);

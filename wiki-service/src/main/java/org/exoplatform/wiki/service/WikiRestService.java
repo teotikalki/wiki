@@ -16,7 +16,11 @@
  */
 package org.exoplatform.wiki.service;
 
+import java.util.List;
+
 import javax.ws.rs.core.Response;
+
+import org.exoplatform.wiki.tree.JsonNodeData;
 
 /**
  *  The WikiRestService provide a service rest to get a Wiki page content.
@@ -40,4 +44,12 @@ public interface WikiRestService {
                               String wikiContextKey,
                               boolean isMarkup,
                               String data);
+  
+  public List<JsonNodeData> getTreeDataNodes(String type,
+                                             String path,
+                                             String currentPath,
+                                             Boolean showExcerpt,
+                                             String depth,
+                                             Boolean showDes) throws Exception;
+  
 }

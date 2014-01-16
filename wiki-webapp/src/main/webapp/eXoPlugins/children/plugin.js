@@ -46,6 +46,8 @@ CKEDITOR.plugins.add('children', {
 					this.data.descendant = childrenDiv.$.getAttribute('descendant');
 					this.data.excerpt = childrenDiv.$.getAttribute('excerpt');
 					this.data.parent = childrenDiv.$.getAttribute('parent');
+					this.data.type = childrenDiv.$.getAttribute('type');
+					this.data.owner = childrenDiv.$.getAttribute('owner');
 				}
 				//alert("cc");
 			},			
@@ -105,6 +107,9 @@ CKEDITOR.plugins.add('children', {
 						childrenDiv.$.setAttribute('descendant', children.data.descendant);
 						childrenDiv.$.setAttribute('excerpt', children.data.excerpt);
 						childrenDiv.$.setAttribute('parent', children.data.parent);
+						
+						childrenDiv.$.setAttribute('type', eXo.wiki.UIWikiPortlet.pageType);
+						childrenDiv.$.setAttribute('owner', eXo.wiki.UIWikiPortlet.pageOwner);
 					}
 				}
 			}

@@ -16,6 +16,9 @@
  */
 package org.exoplatform.wiki.rendering;
 
+import java.lang.reflect.Type;
+
+import org.exoplatform.wiki.rendering.plugin.widget.WidgetPlugin;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.manager.ComponentRepositoryException;
@@ -104,5 +107,25 @@ public interface RenderingService {
      * @param cssURL The CSS URL.
      */
   public void setCssURL(String cssURL);
+  
+  /**
+   * encode the html
+   * @param source the source html
+   * @return encoded html
+   * @throws Exception
+   */
+  public String encodeHtml(String source) throws Exception;
+  
+  /**
+   * decode the html
+   * @param source
+   * @return
+   * @throws Exception
+   */
+  public String decodeHtml(String source) throws Exception;
+  
+  public void addWidgetPlugin(WidgetPlugin plugin);
+  
+  public <T> T getComponent(Type clazz);
 
 }

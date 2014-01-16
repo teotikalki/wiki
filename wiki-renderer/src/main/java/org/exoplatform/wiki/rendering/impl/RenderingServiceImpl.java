@@ -21,12 +21,12 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-import javax.jws.WebResult;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.services.log.ExoLogger;
@@ -34,6 +34,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.wiki.rendering.RenderingService;
 import org.exoplatform.wiki.rendering.converter.BlockConverter;
+import org.exoplatform.wiki.rendering.plugin.widget.WidgetPlugin;
 import org.picocontainer.Startable;
 import org.w3c.dom.Document;
 import org.xwiki.component.embed.EmbeddableComponentManager;
@@ -42,13 +43,13 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.context.Execution;
 import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.Block.Axes;
 import org.xwiki.rendering.block.FormatBlock;
 import org.xwiki.rendering.block.GroupBlock;
 import org.xwiki.rendering.block.HeaderBlock;
 import org.xwiki.rendering.block.LinkBlock;
 import org.xwiki.rendering.block.SectionBlock;
 import org.xwiki.rendering.block.XDOM;
-import org.xwiki.rendering.block.Block.Axes;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
 import org.xwiki.rendering.converter.ConversionException;
 import org.xwiki.rendering.listener.Format;
@@ -73,6 +74,8 @@ public class RenderingServiceImpl implements RenderingService, Startable {
   private Log LOG = ExoLogger.getExoLogger(RenderingServiceImpl.class);
   
   private EmbeddableComponentManager componentManager = null;
+  
+  private Set<WidgetPlugin> widgetPlugins = new HashSet<WidgetPlugin>();
 
   public Execution getExecution() throws ComponentLookupException, ComponentRepositoryException{
     return componentManager.getInstance(Execution.class);
@@ -375,4 +378,26 @@ public class RenderingServiceImpl implements RenderingService, Startable {
   public void setCssURL(String cssURL) {
     this.cssURL = cssURL;
   }
+
+  @Override
+  public String encodeHtml(String source) throws Exception {
+    for (WidgetPlugin plugin : widgetPlugins) {
+      source = plugin.encodeHtml(source);
+    }
+    return source;
+  }
+
+  @Override
+  public String decodeHtml(String source) throws Exception {
+    for (WidgetPlugin plugin : widgetPlugins) {
+      source = plugin.decodeHtml(source);
+    }
+    return source;
+  }
+
+  @Override
+  public void addWidgetPlugin(WidgetPlugin plugin) {
+    widgetPlugins.add(plugin);
+  }
+  
 }
