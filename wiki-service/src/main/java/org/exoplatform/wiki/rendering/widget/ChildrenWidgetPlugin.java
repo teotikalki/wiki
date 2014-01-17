@@ -17,6 +17,7 @@
 package org.exoplatform.wiki.rendering.widget;
 
 import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,9 +93,11 @@ public class ChildrenWidgetPlugin extends WidgetPlugin {
         String parent = elem.getAttribute("parent");
         
         try {
+          String path = elem.getAttribute("type") + "/" + elem.getAttribute("owner") + "/" + parent;
+          path = path.replace("//", "/");
           List<JsonNodeData> data = Utils.getService(WikiRestService.class)
                .getTreeDataNodes(TREETYPE.CHILDREN.toString(), 
-                                 elem.getAttribute("type") + "/" + elem.getAttribute("owner") + "/" + parent, 
+                                 path, 
                                  "", excerpt, stDepth, descendant);
           String key = "" + System.currentTimeMillis() + (int)(Math.random() * 1000000);
           elem.setTextContent(key);
@@ -129,7 +132,12 @@ public class ChildrenWidgetPlugin extends WidgetPlugin {
     StringBuilder ret = new StringBuilder("<li>");
     ret.append("<span class='wikilink'>");
     String path = node.getPath();
-    ret.append("<a href='").append(path.substring(path.lastIndexOf("/") + 1)).append("'>");
+    try {
+      path = (new java.net.URI(path)).getPath();
+    } catch (URISyntaxException e) {
+      //keep path as before, do nothing
+    }
+    ret.append("<a href='").append(path).append("'>");
     ret.append(node.getName()); 
     ret.append("</a>");
     ret.append("</span>");

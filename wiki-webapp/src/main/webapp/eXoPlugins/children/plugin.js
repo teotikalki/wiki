@@ -70,6 +70,7 @@ CKEDITOR.plugins.add('children', {
 					"&excerpt=" + (this.data.excerpt && this.data.excerpt.toLowerCase() == "yes" ? "true" : "false") +
 					"&depth=" + (this.data.depth?this.data.depth : 1000) +
 					"&showDes=" + ((this.data.descendant && this.data.descendant.toLowerCase() == "yes" || !this.data.descendant) ? "true" : "false");
+					restUrl = restUrl.replace("//", "/");
 					$.ajax({
 						async : true,
 						url : restUrl,
