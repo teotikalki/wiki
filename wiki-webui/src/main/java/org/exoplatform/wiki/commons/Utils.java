@@ -454,11 +454,13 @@ public class Utils {
                                          WikiMode mode,
                                          Map<String, String[]> params) throws Exception {
     StringBuffer sb = new StringBuffer();
+
     sb.append(getURLFromParams(pageParams));
 //    sb.append(getPageLink());
 //    if(!StringUtils.isEmpty(pageParams.getPageId())){
 //      sb.append(URLEncoder.encode(pageParams.getPageId(), "UTF-8"));
 //    }
+
     if (!mode.equals(WikiMode.VIEW)) {
       sb.append("#").append(Utils.getActionFromWikiMode(mode));
     }
@@ -626,10 +628,26 @@ public class Utils {
     }
   }
   
+
   public static String getDraftIdSessionKey() throws RepositoryException {
     return ConversationState.getCurrent().getIdentity().getUserId()
           + org.exoplatform.wiki.rendering.util.Utils.getService(RepositoryService.class)
            .getCurrentRepository().getConfiguration().getName()
           + DRAFT_ID;
-  }
+}
+//  public static String getPageLink() throws Exception {    
+//    StringBuilder sb = new StringBuilder();    
+//    sb.append(Utils.getBaseUrl());
+//     
+//    String pageURI = Util.getUIPortal().getSelectedUserNode().getURI();    
+//    String pageName = Util.getUIPortal().getSelectedUserNode().getName();
+//    if(!WikiContext.WIKI.equals(pageName)) {
+//      if(pageURI.contains(WikiContext.WIKI)) {
+//        pageURI = pageURI.substring(pageURI.indexOf(WikiContext.WIKI) + WikiContext.WIKI.length() + 1, pageURI.length());
+//      }
+//      sb.append(pageURI).append("/");
+//    } 
+//    return sb.toString();
+//
+//  }
 }
