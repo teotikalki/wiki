@@ -21,6 +21,7 @@ import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.lifecycle.Lifecycle;
 import org.exoplatform.wiki.commons.Utils;
 import org.exoplatform.wiki.service.WikiPageParams;
+import org.exoplatform.wiki.mow.api.Page;
 import org.exoplatform.wiki.utils.WikiNameValidator;
 
 @ComponentConfig(
@@ -43,4 +44,10 @@ public class UIWikiContentDisplay extends UIContainer {
   public WikiPageParams getCurrentPageParams() throws Exception {
     return Utils.getCurrentWikiPageParams();
   }
+
+  protected long getUpdatedDate() throws Exception {
+    Page page = Utils.getCurrentWikiPage();
+    return page.getUpdatedDate().getTime();
+  }
+
 }

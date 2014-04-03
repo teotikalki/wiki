@@ -30,7 +30,6 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 
 import javax.annotation.security.RolesAllowed;
-import javax.jcr.Workspace;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
@@ -1010,14 +1009,13 @@ public class WikiRestServiceImpl implements WikiRestService, ResourceContainer {
    * 
    * @param wikiType type of wiki to save draft
    * @param wikiOwner owner of wiki to save draft
-   * @param pageId name of page to save draft
+   * @param rawPageId name of page to save draft in encoded format
    * @param pageRevision the target revision of target page
    * @param lastDraftName name of the draft page of last saved draft request
    * @param isNewPage The draft for new page or not
    * @param title draft title
    * @param content draft content
    * @param isMarkup content is markup or html. True if is markup.
-   * @param uuid the real page uuid
    * @return {@link Response} with status HTTPStatus.ACCEPTED if saving process is performed successfully
    *                          with status HTTPStatus.INTERNAL_ERROR if there is any unknown error in the saving process
    */                          
@@ -1026,20 +1024,20 @@ public class WikiRestServiceImpl implements WikiRestService, ResourceContainer {
   @RolesAllowed("users")
   public Response saveDraft(@QueryParam("wikiType") String wikiType,
                             @QueryParam("wikiOwner") String wikiOwner,
-                            @QueryParam("pageId") String pageId,
+                            @QueryParam("pageId") String rawPageId,
                             @QueryParam("pageRevision") String pageRevision,
                             @QueryParam("lastDraftName") String lastDraftName,
                             @QueryParam("isNewPage") boolean isNewPage,
                             @QueryParam("clientTime") long clientTime,
                             @FormParam("title") String title,
                             @FormParam("content") String content,
-                            @FormParam("isMarkup") String isMarkup,
-                            @FormParam("uuid") String uuid) {
+                            @FormParam("isMarkup") String isMarkup) {
+    String pageId = null;
     try {
       if ("__anonim".equals(org.exoplatform.wiki.utils.Utils.getCurrentUser())) {
         return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(cc).build();
-      }
-      
+      } 
+      pageId = URLDecoder.decode(rawPageId,"utf-8");
       WikiPageParams param = new WikiPageParams(wikiType, wikiOwner, pageId);
       PageImpl pageImpl = (PageImpl) wikiService.getPageById(wikiType, wikiOwner, pageId);
       if (StringUtils.isEmpty(pageId) || (pageImpl == null)) {
@@ -1084,26 +1082,18 @@ public class WikiRestServiceImpl implements WikiRestService, ResourceContainer {
       }
       draftPage.getContent().setText(content);
       ((DraftPageImpl) draftPage).getChromatticSession().save();
-      //copy attachment to draft page
-      if (isNewPage) {
-        Page realPage = wikiService.getPageByUUID(uuid);
-        Workspace workspace = draftPage.getJCRPageNode().getSession().getWorkspace();
-        draftPage.getAttachments().clear();
-        Collection<AttachmentImpl> atts = ((PageImpl) realPage).getAttachmentsExcludeContent();
-        for (AttachmentImpl att : atts) {
-          workspace.copy(att.getPath(), draftPage.getJCRPageNode().getPath() + "/" + att.getName());
-        }
-      }
-      ((DraftPageImpl) draftPage).getChromatticSession().save();
       
       // Log the editting time for current user
       Utils.logEditPageTime(param, Utils.getCurrentUser(), System.currentTimeMillis(), draftPage.getName(), isNewPage);
       
       // Notify to client that saved draft success
       return Response.ok(new DraftData(draftPage.getName()), MediaType.APPLICATION_JSON).cacheControl(cc).build();
-    } catch (Exception ex) {
-      
-      // Notify to client that save draft fail
+    } catch (UnsupportedEncodingException uee) {
+        log.warn("Cannot decode page name");
+        return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
+    } 
+    catch (Exception ex) {
+      if(StringUtils.isEmpty(pageId)) pageId = rawPageId;
       log.warn(String.format("Failed to perform auto save wiki page %s:%s:%s", wikiType,wikiOwner,pageId), ex);
       return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
     }
