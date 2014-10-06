@@ -16,10 +16,6 @@
  */
 package org.exoplatform.wiki.webui.control.action;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
-
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -34,15 +30,15 @@ import org.exoplatform.wiki.commons.Utils;
 import org.exoplatform.wiki.service.WikiContext;
 import org.exoplatform.wiki.service.WikiPageParams;
 import org.exoplatform.wiki.service.WikiService;
-import org.exoplatform.wiki.webui.UIWikiPageEditForm;
-import org.exoplatform.wiki.webui.UIWikiPageTitleControlArea;
-import org.exoplatform.wiki.webui.UIWikiPortlet;
-import org.exoplatform.wiki.webui.UIWikiRichTextArea;
-import org.exoplatform.wiki.webui.WikiMode;
+import org.exoplatform.wiki.webui.*;
 import org.exoplatform.wiki.webui.control.action.core.AbstractEventActionComponent;
 import org.exoplatform.wiki.webui.control.filter.EditPagesPermissionFilter;
 import org.exoplatform.wiki.webui.control.filter.IsViewModeFilter;
 import org.exoplatform.wiki.webui.control.listener.AddContainerActionListener;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.ResourceBundle;
 
 @ComponentConfig(
   template = "app:/templates/wiki/webui/control/action/AbstractActionComponent.gtmpl",
@@ -80,6 +76,7 @@ public class AddPageActionComponent extends AbstractEventActionComponent {
       wservice.removeDraft(org.exoplatform.wiki.utils.Utils.getPageNameForAddingPage());
       
       UIWikiPortlet wikiPortlet = event.getSource().getAncestorOfType(UIWikiPortlet.class);
+      wikiPortlet.changeMode(WikiMode.ADDPAGE);
       WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
       ResourceBundle res = context.getApplicationResourceBundle();
       WikiPageParams pageParams = Utils.getCurrentWikiPageParams();
@@ -105,7 +102,6 @@ public class AddPageActionComponent extends AbstractEventActionComponent {
         Utils.feedDataForWYSIWYGEditor(pageEditForm, null);
       }
 
-      wikiPortlet.changeMode(WikiMode.ADDPAGE);
       super.processEvent(event);
     }
   }
