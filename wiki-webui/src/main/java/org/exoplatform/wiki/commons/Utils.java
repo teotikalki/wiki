@@ -408,20 +408,20 @@ public class Utils {
   /**
    * Get the full path for current wiki page   
   */
-  public static String getPageLink() throws Exception {    
-    WikiPageParams params = getCurrentWikiPageParams();
-    params.setPageId(null);
-    if (PortalConfig.PORTAL_TYPE.equals(params.getType())) {
-      String navigationURI = Util.getUIPortal().getNavPath().getURI();
-      String requestURI = Util.getPortalRequestContext().getRequestURI();
-      if (requestURI.indexOf(navigationURI) < 0) {
-        navigationURI = "wiki";
-      }
-      return requestURI.substring(0, requestURI.indexOf(navigationURI) + navigationURI.length())
-          + "/";
-    }
-    return getURLFromParams(params);
-  }
+//  public static String getPageLink() throws Exception {    
+//    WikiPageParams params = getCurrentWikiPageParams();
+//    params.setPageId(null);
+//    if (PortalConfig.PORTAL_TYPE.equals(params.getType())) {
+//      String navigationURI = Util.getUIPortal().getNavPath().getURI();
+//      String requestURI = Util.getPortalRequestContext().getRequestURI();
+//      if (requestURI.indexOf(navigationURI) < 0) {
+//        navigationURI = "wiki";
+//      }
+//      return requestURI.substring(0, requestURI.indexOf(navigationURI) + navigationURI.length())
+//          + "/";
+//    }
+//    return getURLFromParams(params);
+//  }
 
   public static void redirect(WikiPageParams pageParams, WikiMode mode, Map<String, String[]> params) throws Exception {
     PortalRequestContext portalRequestContext = Util.getPortalRequestContext();
@@ -635,19 +635,19 @@ public class Utils {
            .getCurrentRepository().getConfiguration().getName()
           + DRAFT_ID;
 }
-//  public static String getPageLink() throws Exception {    
-//    StringBuilder sb = new StringBuilder();    
-//    sb.append(Utils.getBaseUrl());
-//     
-//    String pageURI = Util.getUIPortal().getSelectedUserNode().getURI();    
-//    String pageName = Util.getUIPortal().getSelectedUserNode().getName();
-//    if(!WikiContext.WIKI.equals(pageName)) {
-//      if(pageURI.contains(WikiContext.WIKI)) {
-//        pageURI = pageURI.substring(pageURI.indexOf(WikiContext.WIKI) + WikiContext.WIKI.length() + 1, pageURI.length());
-//      }
-//      sb.append(pageURI).append("/");
-//    } 
-//    return sb.toString();
-//
-//  }
+  public static String getPageLink() throws Exception {    
+    StringBuilder sb = new StringBuilder();    
+    sb.append(Utils.getBaseUrl());
+     
+    String pageURI = Util.getUIPortal().getSelectedUserNode().getURI();    
+    String pageName = Util.getUIPortal().getSelectedUserNode().getName();
+    if(!WikiContext.WIKI.equals(pageName)) {
+      if(pageURI.contains(WikiContext.WIKI)) {
+        pageURI = pageURI.substring(pageURI.indexOf(WikiContext.WIKI) + WikiContext.WIKI.length() + 1, pageURI.length());
+      }
+      sb.append(pageURI).append("/");
+    } 
+    return sb.toString();
+
+  }
 }
