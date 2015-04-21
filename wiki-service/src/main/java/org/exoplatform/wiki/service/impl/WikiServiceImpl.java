@@ -823,7 +823,7 @@ public class WikiServiceImpl implements WikiService, Startable {
                              String newSyntaxId) throws Exception {
     if (newTitle != null) {
       template = getTemplatesContainer(params).addPage(TitleResolver.getId(newTitle,false), template);
-      template.setDescription(StringEscapeUtils.escapeHtml(newDescription));
+      template.setDescription(newDescription);
       template.setTitle(newTitle);
       template.getContent().setText(newContent);
       template.setSyntax(newSyntaxId);

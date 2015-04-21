@@ -19,7 +19,7 @@ package org.exoplatform.wiki.webui.control.action;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.datamodel.IllegalNameException;
 import org.exoplatform.services.log.ExoLogger;
@@ -125,6 +125,7 @@ public class SaveTemplateActionComponent extends UIComponent {
       String markup = (markupInput.getValue() == null) ? "" : markupInput.getValue();
       markup = markup.trim();
       String description = descriptionInput.getValue();
+      description = CommonsUtils.removeXSS(description);
       String syntaxId = Utils.getDefaultSyntax();
       String[] msgArg = { title };
       boolean isExist = false; 
@@ -149,7 +150,7 @@ public class SaveTemplateActionComponent extends UIComponent {
           wikiService.modifyTemplate(pageParams, template, title, description, markup, syntaxId);
         } else if (wikiPortlet.getWikiMode() == WikiMode.ADDTEMPLATE) {
           Template template = wikiService.createTemplatePage(title, pageParams);
-          template.setDescription(StringEscapeUtils.escapeHtml(description));
+          template.setDescription(description);
           template.getContent().setText(markup);
           template.setSyntax(syntaxId);
           template.setNonePermission();
