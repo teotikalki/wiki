@@ -143,7 +143,7 @@ public class SavePageActionComponent extends UIComponent {
         String markup = (markupInput.getValue() == null) ? "" : markupInput.getValue();
         markup = markup.trim();
   
-        String newPageId = Text.escapeIllegalJcrChars(title);
+        String newPageId = org.exoplatform.wiki.utils.Utils.escapeIllegalJcrChars(title);
         if (WikiNodeType.Definition.WIKI_HOME_NAME.equals(page.getName()) && wikiPortlet.getWikiMode() == WikiMode.EDITPAGE) {
           // as wiki home page has fixed name (never edited anymore), every title changing is accepted.
           ;
@@ -202,8 +202,7 @@ public class SavePageActionComponent extends UIComponent {
               page.setComment(commentInput.getValue());
               page.setSyntax(syntaxId);
               pageTitleControlForm.getUIFormInputInfo().setValue(title);
-              pageParams.setPageId(page.getName());
-              page.setURL(Utils.getURLFromParams(pageParams));
+              page.setURL(org.exoplatform.wiki.utils.Utils.unescapeIllegalJcrChars(Utils.getURLFromParams(pageParams)));
               
               if (!page.getContent().getText().equals(markup)) {
                 page.getContent().setText(markup);
@@ -214,7 +213,6 @@ public class SavePageActionComponent extends UIComponent {
                 page.setTitle(title);
                 ((PageImpl) page).checkin();
                 ((PageImpl) page).checkout();
-                pageParams.setPageId(newPageId);
               } else {
                 ((PageImpl) page).checkin();
                 ((PageImpl) page).checkout();
@@ -237,8 +235,7 @@ public class SavePageActionComponent extends UIComponent {
             Page draftPage = Utils.getCurrentNewDraftWikiPage();
             Collection<AttachmentImpl> attachs = (Collection<AttachmentImpl>) draftPage.getAttachments();
             Page addedPage = wikiService.createPage(pageParams.getType(), pageParams.getOwner(), title, page.getName());
-            pageParams.setPageId(newPageId);
-            addedPage.setURL(Text.unescapeIllegalJcrChars(Utils.getURLFromParams(pageParams)));
+            addedPage.setURL(org.exoplatform.wiki.utils.Utils.unescapeIllegalJcrChars(Utils.getURLFromParams(pageParams)));
             addedPage.getContent().setText(markup);
             addedPage.setSyntax(syntaxId);
             ((PageImpl) addedPage).getAttachments().addAll(attachs);
