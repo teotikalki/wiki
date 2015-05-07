@@ -16,3 +16,4 @@ org.exoplatform.wiki.rendering.builder.ConfluenceReferenceBuilder
 org.exoplatform.wiki.rendering.builder.XWiki20ReferenceBuilder
 org.exoplatform.wiki.rendering.reference.ObjectReferenceConverter
 org.exoplatform.wiki.rendering.reference.ConfluenceObjectReferenceConverter
+org.exoplatform.wiki.service.wysiwyg.DefaultImportService
