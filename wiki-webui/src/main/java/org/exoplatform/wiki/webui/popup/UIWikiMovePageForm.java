@@ -263,6 +263,11 @@ public class UIWikiMovePageForm extends UIForm implements UIPopupComponent {
       // Move page
       boolean isMoved = wservice.movePage(currentLocationParams, newLocationParams);      
       if (!isMoved) {
+        // Restore Page URL
+        movepage.setURL(org.exoplatform.wiki.commons.Utils.getURLFromParams(newLocationParams));
+        String sourceLocation = movepage.getURL();
+        String sourceURL = sourceLocation.substring(0, sourceLocation.lastIndexOf("/") + 1);
+        changeURL(movepage, sourceURL);
         event.getRequestContext()
              .getUIApplication()
              .addMessage(new ApplicationMessage("UIWikiMovePageForm.msg.no-permission-at-destination", null, ApplicationMessage.WARNING));
