@@ -16,6 +16,7 @@
  */
 package org.exoplatform.wiki.webui.control.action;
 
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -202,8 +203,8 @@ public class SavePageActionComponent extends UIComponent {
               page.setComment(commentInput.getValue());
               page.setSyntax(syntaxId);
               pageTitleControlForm.getUIFormInputInfo().setValue(title);
-              page.setURL(org.exoplatform.wiki.utils.Utils.unescapeIllegalJcrChars(Utils.getURLFromParams(pageParams)));
-              
+              String urlFromParams = Utils.getURLFromParams(pageParams); 
+              page.setURL(urlFromParams.substring(0, urlFromParams.lastIndexOf("/")+1)+ URLEncoder.encode(newPageId, "UTF-8"));
               if (!page.getContent().getText().equals(markup)) {
                 page.getContent().setText(markup);
                 isContentChange = true;
@@ -235,7 +236,8 @@ public class SavePageActionComponent extends UIComponent {
             Page draftPage = Utils.getCurrentNewDraftWikiPage();
             Collection<AttachmentImpl> attachs = (Collection<AttachmentImpl>) draftPage.getAttachments();
             Page addedPage = wikiService.createPage(pageParams.getType(), pageParams.getOwner(), title, page.getName());
-            addedPage.setURL(org.exoplatform.wiki.utils.Utils.unescapeIllegalJcrChars(Utils.getURLFromParams(pageParams)));
+            String urlFromParams = Utils.getURLFromParams(pageParams); 
+            addedPage.setURL(urlFromParams.substring(0, urlFromParams.lastIndexOf("/")+1)+ URLEncoder.encode(newPageId, "UTF-8"));
             addedPage.getContent().setText(markup);
             addedPage.setSyntax(syntaxId);
             ((PageImpl) addedPage).getAttachments().addAll(attachs);
