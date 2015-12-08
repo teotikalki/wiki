@@ -87,7 +87,8 @@ public class TreeNode {
   }
 
   public boolean isHasChild() {
-    return hasChild;
+    //TODO Removes setHasChild in 4.4-M1
+    return children.size() > 0;
   }
 
   public void setHasChild(boolean hasChild) {
