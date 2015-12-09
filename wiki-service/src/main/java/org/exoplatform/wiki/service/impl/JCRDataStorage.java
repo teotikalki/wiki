@@ -2187,6 +2187,7 @@ public class JCRDataStorage implements DataStorage {
         page.setSyntax(pageImpl.getSyntax());
         page.setPermissions(JCRUtils.convertToPermissionEntryList(pageImpl.getPermission()));
         page.setActivityId(pageImpl.getActivityId());
+        page.setHasChild(!pageImpl.getChildPages().isEmpty());
       } finally {
         mowService.stopSynchronization(created);
       }

@@ -55,6 +55,8 @@ public class Page {
 
   private boolean isMinorEdit;
 
+  private boolean hasChild;
+
   public Page() {
   }
 
@@ -202,5 +204,13 @@ public class Page {
 
   public void setMinorEdit(boolean isMinorEdit) {
     this.isMinorEdit = isMinorEdit;
+  }
+
+  public boolean isHasChild() {
+    return hasChild;
+  }
+
+  public void setHasChild(boolean hasChild) {
+    this.hasChild = hasChild;
   }
 }

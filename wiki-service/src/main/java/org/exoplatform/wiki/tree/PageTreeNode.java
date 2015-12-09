@@ -45,6 +45,7 @@ public class PageTreeNode extends TreeNode {
 
     this.page = page;
     this.path = buildPath();
+    this.hasChild = page.isHasChild();
   }
 
   public Page getPage() {
