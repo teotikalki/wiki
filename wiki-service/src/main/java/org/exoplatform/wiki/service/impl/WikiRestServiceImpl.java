@@ -330,14 +330,11 @@ public class WikiRestServiceImpl implements WikiRestService, ResourceContainer {
                           @QueryParam("start") Integer start,
                           @QueryParam("number") Integer number) {
     Spaces spaces = objectFactory.createSpaces();
-    List<String> spaceNames = new ArrayList<>();
     try {
-      Collection<Wiki> wikis = wikiService.getWikisByType(wikiType.toUpperCase());
+      List<Wiki> wikis = wikiService.getWikisByType(wikiType.toUpperCase());
       for (Wiki wiki : wikis) {
-        for (String spaceName : spaceNames) {
-          org.exoplatform.wiki.mow.api.Page page = wiki.getWikiHome();
-          spaces.getSpaces().add(createSpace(objectFactory, uriInfo.getBaseUri(), wikiType, spaceName, page));
-        }
+        org.exoplatform.wiki.mow.api.Page page = wikiService.getPageOfWikiByName(wikiType, wiki.getOwner(), WikiConstants.WIKI_HOME_NAME);
+        spaces.getSpaces().add(createSpace(objectFactory, uriInfo.getBaseUri(), wikiType, wiki.getOwner(), page));
       }
     } catch(WikiException e) {
       log.error("Cannot get spaces of wiki type " + wikiType + " - Cause : " + e.getMessage(), e);
