@@ -33,6 +33,7 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.IdentityConstants;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.social.core.space.SpaceApplicationConfigPlugin.SpaceApplication;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.core.UIComponent;
@@ -135,7 +136,7 @@ public class Utils {
     params.setParameters(paramsMap);
     return params;
   }
-  
+
   /**
    * Gets current wiki page directly from data base
    * @return current wiki page
@@ -186,7 +187,7 @@ public class Utils {
         spaceUrl.append("/");
       }
       //spaceUrl.append("wiki/");
-      spaceUrl.append(getWikiAppNameInSpace(params.getOwner())).append("/");
+      spaceUrl.append(getWikiUriInSpace()).append("/");
       if (!StringUtils.isEmpty(params.getPageName())) {
         spaceUrl.append(params.getPageName());
       }
@@ -194,7 +195,21 @@ public class Utils {
     }
     return org.exoplatform.wiki.utils.Utils.getPermanlink(params, false);
   }
-  
+
+  private static  String getWikiUriInSpace() {
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    SpaceService spaceService = (SpaceService) container.getComponentInstance(SpaceService.class);
+    List<SpaceApplication> spaceApplicationList = spaceService.getSpaceApplicationConfigPlugin().getSpaceApplicationList();
+    if (spaceApplicationList !=null) {
+      for (SpaceApplication spaceApplication : spaceApplicationList) {
+        if (spaceApplication.getPortletName().equals("WikiPortlet")) {
+          return spaceApplication.getUri();
+        }
+      }
+    }
+    return "wiki";
+  }
+
   private static String getWikiAppNameInSpace(String spaceId) {
     SpaceService spaceService = org.exoplatform.wiki.rendering.util.Utils.getService(SpaceService.class);
     Space space = spaceService.getSpaceByGroupId(spaceId);
