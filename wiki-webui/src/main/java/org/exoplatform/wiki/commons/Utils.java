@@ -210,21 +210,6 @@ public class Utils {
     return "wiki";
   }
 
-  private static String getWikiAppNameInSpace(String spaceId) {
-    SpaceService spaceService = org.exoplatform.wiki.rendering.util.Utils.getService(SpaceService.class);
-    Space space = spaceService.getSpaceByGroupId(spaceId);
-    String apps = space.getApp();
-    if (apps != null) {
-      for (String app : apps.split(",")) {
-        String[] appInfos = app.split(":");
-        if (appInfos.length > 1 && "WikiPortlet".equals(appInfos[0])) {
-          return appInfos[1];
-        }
-      }
-    }
-    return "wiki";
-  }
-  
   public static Page getCurrentNewDraftWikiPage() throws Exception {
     WikiService wikiService = (WikiService) PortalContainer.getComponent(WikiService.class);
     return wikiService.getExsitedOrNewDraftPageById(null, null, org.exoplatform.wiki.utils.Utils.getPageNameForAddingPage());
