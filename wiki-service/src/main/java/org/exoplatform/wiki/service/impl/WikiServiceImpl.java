@@ -383,7 +383,7 @@ public class WikiServiceImpl implements WikiService, Startable {
     if(wikiType.equals(PortalConfig.GROUP_TYPE)) {
       wikiLabel = getSpaceNameByGroupId(owner);
     }
-    if (!wikiLabel.equals("intranet")) {
+    else if(wikiType.equals(PortalConfig.USER_TYPE)) {
       ResourceBundle bundle = RequestContext.getCurrentInstance().getApplicationResourceBundle();
       wikiLabel = bundle.getString("UIRelatedPagesContainer.title.my-space");
     }
