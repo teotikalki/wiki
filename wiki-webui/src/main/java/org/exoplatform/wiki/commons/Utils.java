@@ -17,6 +17,7 @@
 package org.exoplatform.wiki.commons;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.exoplatform.commons.utils.MimeTypeResolver;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -25,6 +26,8 @@ import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.portal.webui.portal.UIPortal;
 import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserStatus;
@@ -65,7 +68,9 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class Utils {  
+public class Utils {
+
+  private static final Log LOG = ExoLogger.getLogger(Utils.class);
  
   public static final int DEFAULT_VALUE_UPLOAD_PORTAL = -1;
   
@@ -197,17 +202,18 @@ public class Utils {
   }
 
   private static  String getWikiUriInSpace() {
-    ExoContainer container = ExoContainerContext.getCurrentContainer();
-    SpaceService spaceService = (SpaceService) container.getComponentInstance(SpaceService.class);
-    List<SpaceApplication> spaceApplicationList = spaceService.getSpaceApplicationConfigPlugin().getSpaceApplicationList();
-    if (spaceApplicationList !=null) {
-      for (SpaceApplication spaceApplication : spaceApplicationList) {
-        if (spaceApplication.getPortletName().equals("WikiPortlet")) {
-          return spaceApplication.getUri();
-        }
+    String[] parsedUrl = new String[10];
+    int index = 0;
+    try {
+      parsedUrl = getCurrentRequestURL().split("/");
+      if (ArrayUtils.contains(parsedUrl, getCurrentSpaceName())) {
+        index = ArrayUtils.indexOf(parsedUrl, getCurrentSpaceName());
       }
+    } catch (Exception e) {
+      LOG.warn(e.getMessage(), e);
+      return "wiki";
     }
-    return "wiki";
+    return parsedUrl[index + 1];
   }
 
   public static Page getCurrentNewDraftWikiPage() throws Exception {
@@ -313,7 +319,7 @@ public class Utils {
     wikiContext.setRestURI(getCurrentRestURL());
     wikiContext.setRedirectURI(wikiPortlet.getRedirectURL());
     wikiContext.setPortletURI(pageNodeSelected);
-    WikiPageParams params = Utils.getCurrentWikiPageParams();    
+    WikiPageParams params = Utils.getCurrentWikiPageParams();
     wikiContext.setType(params.getType());
     wikiContext.setOwner(params.getOwner());
     if (editModes.contains(currentMode)) {
