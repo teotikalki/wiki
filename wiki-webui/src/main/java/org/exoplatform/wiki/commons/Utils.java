@@ -24,6 +24,7 @@ import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.config.model.PortalConfig;
+import org.exoplatform.portal.mop.user.UserNode;
 import org.exoplatform.portal.webui.portal.UIPortal;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
@@ -34,6 +35,7 @@ import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.IdentityConstants;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.core.space.SpaceApplicationConfigPlugin.SpaceApplication;
@@ -192,7 +194,7 @@ public class Utils {
         spaceUrl.append("/");
       }
       //spaceUrl.append("wiki/");
-      spaceUrl.append(getWikiUriInSpace()).append("/");
+      spaceUrl.append(getWikiUriOfCurrentSpace()).append("/");
       if (!StringUtils.isEmpty(params.getPageName())) {
         spaceUrl.append(params.getPageName());
       }
@@ -201,19 +203,18 @@ public class Utils {
     return org.exoplatform.wiki.utils.Utils.getPermanlink(params, false);
   }
 
-  private static  String getWikiUriInSpace() {
-    String[] parsedUrl = new String[10];
-    int index = 0;
+  private static  String getWikiUriOfCurrentSpace() {
+    SpaceService spaceService = (SpaceService) PortalContainer.getComponent(SpaceService.class);
     try {
-      parsedUrl = getCurrentRequestURL().split("/");
-      if (ArrayUtils.contains(parsedUrl, getCurrentSpaceName())) {
-        index = ArrayUtils.indexOf(parsedUrl, getCurrentSpaceName());
-      }
+      String spaceUrl = getCurrentSpaceName();
+      Space space = spaceService.getSpaceByUrl(spaceUrl);
+      UserNode spaceUserNode = SpaceUtils.getSpaceUserNode(space);
+      UserNode wikiNode = spaceUserNode.getChild(1);
+      return wikiNode.getName();
     } catch (Exception e) {
-      LOG.warn(e.getMessage(), e);
+      LOG.warn("Get Wiki Uri Of Current Space failed.");
       return "wiki";
     }
-    return parsedUrl[index + 1];
   }
 
   public static Page getCurrentNewDraftWikiPage() throws Exception {
