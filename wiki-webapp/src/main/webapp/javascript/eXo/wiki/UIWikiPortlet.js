@@ -367,6 +367,7 @@ UIWikiPortlet.prototype.fixImageUrl = function(lastUpdated) {
   if (content) {
     $("img", content).each(function(index, elem) {
       var src = elem.getAttribute("src");
+       if(!src.startsWith("data:image")){
       var fragmentParser = src.split("#");
       var fragment = fragmentParser[1];
       var queryParser = fragmentParser[0].split("?");
@@ -392,6 +393,8 @@ UIWikiPortlet.prototype.fixImageUrl = function(lastUpdated) {
       elem.setAttribute("src", src);
       });
     }
+  }
+  }
 },
 
 eXo.wiki.UIWikiPortlet = new UIWikiPortlet();
