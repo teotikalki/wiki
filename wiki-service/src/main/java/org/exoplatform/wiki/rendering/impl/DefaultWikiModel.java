@@ -39,6 +39,9 @@ import org.xwiki.rendering.listener.reference.ResourceReference;
 import org.xwiki.rendering.listener.reference.ResourceType;
 import org.xwiki.rendering.wiki.WikiModel;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
+
 import javax.inject.Inject;
 import java.util.Map;
 
@@ -131,9 +134,17 @@ public class DefaultWikiModel implements WikiModel {
         page = wikiService.getExsitedOrNewDraftPageById(wikiMarkupContext.getType(), wikiMarkupContext.getOwner(), wikiMarkupContext.getPageName());
 
         Attachment att = wikiService.getAttachmentOfPageByName(attachmentName, page);
-        if (att != null) {
-          sb.append(att.getDownloadURL());
-        }
+		if (att != null) {
+			if (att.getMimeType().contains("image")) {// only for image
+				sb.setLength(0);// clean up the sp
+				sb.append("data:");
+				sb.append(att.getMimeType());
+				sb.append(";base64,");
+				sb.append(StringUtils.newStringUtf8(Base64
+						.encodeBase64(att.getContent(), false)));
+			} else
+				sb.append(att.getDownloadURL());
+		}
       } else {
         EmotionIcon emotionIcon = wikiService.getEmotionIconByName(attachmentName);
         if(emotionIcon != null) {
