@@ -38,7 +38,6 @@ import org.exoplatform.services.security.IdentityConstants;
 import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.social.core.space.SpaceApplicationConfigPlugin.SpaceApplication;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.core.UIComponent;
@@ -203,18 +202,31 @@ public class Utils {
     return org.exoplatform.wiki.utils.Utils.getPermanlink(params, false);
   }
 
-  private static  String getWikiUriOfCurrentSpace() {
+  private static String getWikiUriOfCurrentSpace() {
     SpaceService spaceService = (SpaceService) PortalContainer.getComponent(SpaceService.class);
     try {
-      String spaceUrl = getCurrentSpaceName();
-      Space space = spaceService.getSpaceByUrl(spaceUrl);
-      UserNode spaceUserNode = SpaceUtils.getSpaceUserNode(space);
-      UserNode wikiNode = spaceUserNode.getChild(1);
-      return wikiNode.getName();
+      String currentWikiNodeUri = getCurrentWikiNodeUri();
+      String currentSpaceName = getCurrentSpaceName();
+      if (currentWikiNodeUri.contains(":spaces:")) {
+        // "/portal/g/:spaces:testSpace/testSspace/wiki_uri/testPage" pattern usecase
+        String[] parsedUrl = currentWikiNodeUri.split("/");
+        if (ArrayUtils.contains(parsedUrl, currentSpaceName)) {
+          int index = ArrayUtils.indexOf(parsedUrl, currentSpaceName);
+          return parsedUrl[index + 1];
+        }
+      } else {
+        // "/portal/intranet/wiki/group/spaces/testSpace/testPage" pattern usecase
+        Collection<UserNode> children =  SpaceUtils.getSpaceUserNode(spaceService.getSpaceByUrl(currentSpaceName)).getChildren();
+        for(UserNode child : children) {
+          if (child.getName().contains("wiki")){
+            return child.getName();
+          }
+        }
+      }
     } catch (Exception e) {
       LOG.warn("Get Wiki Uri Of Current Space failed.");
-      return "wiki";
     }
+    return "wiki";
   }
 
   public static Page getCurrentNewDraftWikiPage() throws Exception {
