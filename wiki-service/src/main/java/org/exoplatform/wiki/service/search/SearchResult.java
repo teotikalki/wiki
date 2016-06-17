@@ -1,5 +1,6 @@
 package org.exoplatform.wiki.service.search;
 
+import org.exoplatform.commons.utils.HTMLSanitizer;
 import org.exoplatform.services.deployment.Utils;
 
 import java.util.Calendar;
@@ -76,7 +77,12 @@ public class SearchResult {
   }
 
   public String getExcerpt() {
-    return Utils.sanitize(excerpt);
+    try {
+      return HTMLSanitizer.sanitize(excerpt);
+    } catch (Exception E) {
+
+    }
+    return "";
   }
 
   public void setType(SearchResultType type) {
