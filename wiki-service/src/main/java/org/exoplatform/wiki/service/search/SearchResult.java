@@ -2,10 +2,13 @@ package org.exoplatform.wiki.service.search;
 
 import org.exoplatform.commons.utils.HTMLSanitizer;
 import org.exoplatform.services.deployment.Utils;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 
 import java.util.Calendar;
 
 public class SearchResult {
+  private static Log log = ExoLogger.getLogger(SearchResult.class);
   protected String wikiType;
   protected String wikiOwner;
   protected String pageName;
@@ -79,7 +82,9 @@ public class SearchResult {
   public String getExcerpt() {
     try {
       return HTMLSanitizer.sanitize(excerpt);
-    } catch (Exception E) {
+    } catch (Exception e) {
+
+      log.error("Fail to sanitize input ["+excerpt+"]",e.getLocalizedMessage(),e);
 
     }
     return "";
