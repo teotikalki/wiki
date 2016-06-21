@@ -84,7 +84,7 @@ public class SearchResult {
       return HTMLSanitizer.sanitize(excerpt);
     } catch (Exception e) {
 
-      log.error("Fail to sanitize input ["+excerpt+"]",e.getLocalizedMessage(),e);
+      log.error("Fail to sanitize input ["+excerpt+"], "+ e.getMessage(), e);
 
     }
     return "";
