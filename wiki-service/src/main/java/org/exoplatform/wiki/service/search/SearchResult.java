@@ -1,30 +1,48 @@
 package org.exoplatform.wiki.service.search;
 
+import java.util.Calendar;
+
 import org.exoplatform.commons.utils.HTMLSanitizer;
-import org.exoplatform.services.deployment.Utils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
-import java.util.Calendar;
-
 public class SearchResult {
-  private static Log log = ExoLogger.getLogger(SearchResult.class);
-  protected String wikiType;
-  protected String wikiOwner;
-  protected String pageName;
-  protected String attachmentName;
-  protected String excerpt;
-  protected String title;
-  protected SearchResultType type;
-  protected String url;
-  protected long score;
-  protected Calendar updatedDate;  
-  protected Calendar createdDate;
+  private static Log         log = ExoLogger.getLogger(SearchResult.class);
 
-  public SearchResult() {}
-  
-  public SearchResult(String wikiType, String wikiOwner, String pageName, String attachmentName, String excerpt,
-                      String title, SearchResultType type, Calendar updatedDate, Calendar createdDate) {
+  protected String           wikiType;
+
+  protected String           wikiOwner;
+
+  protected String           pageName;
+
+  protected String           attachmentName;
+
+  protected String           excerpt;
+
+  protected String           title;
+
+  protected SearchResultType type;
+
+  protected String           url;
+
+  protected long             score;
+
+  protected Calendar         updatedDate;
+
+  protected Calendar         createdDate;
+
+  public SearchResult() {
+  }
+
+  public SearchResult(String wikiType,
+                      String wikiOwner,
+                      String pageName,
+                      String attachmentName,
+                      String excerpt,
+                      String title,
+                      SearchResultType type,
+                      Calendar updatedDate,
+                      Calendar createdDate) {
     this.wikiType = wikiType;
     this.wikiOwner = wikiOwner;
     this.pageName = pageName;
@@ -48,16 +66,16 @@ public class SearchResult {
     return wikiOwner;
   }
 
-  public void setPageName(String pageName) {
-    this.pageName = pageName;
+  public void setWikiOwner(String wikiOwner) {
+    this.wikiOwner = wikiOwner;
   }
 
   public String getPageName() {
     return pageName;
   }
 
-  public void setWikiOwner(String wikiOwner) {
-    this.wikiOwner = wikiOwner;
+  public void setPageName(String pageName) {
+    this.pageName = pageName;
   }
 
   public String getAttachmentName() {
@@ -68,15 +86,12 @@ public class SearchResult {
     this.attachmentName = attachmentName;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
   public String getTitle() {
     return title;
   }
-  
-  public void setExcerpt(String text) {
-    this.excerpt = text;
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getExcerpt() {
@@ -84,34 +99,38 @@ public class SearchResult {
       return HTMLSanitizer.sanitize(excerpt);
     } catch (Exception e) {
 
-      log.error("Fail to sanitize input ["+excerpt+"], "+ e.getMessage(), e);
+      log.error("Fail to sanitize input [" + excerpt + "], " + e.getMessage(), e);
 
     }
     return "";
+  }
+
+  public void setExcerpt(String text) {
+    this.excerpt = text;
+  }
+
+  public SearchResultType getType() {
+    return type;
   }
 
   public void setType(SearchResultType type) {
     this.type = type;
   }
 
-  public SearchResultType getType() {
-    return type;
-  }
-  
-  public void setUrl(String url) {
-    this.url = url;
-  }
-  
   public String getUrl() {
     return url;
   }
-  
-  public void setScore(long score) {
-    this.score = score;
+
+  public void setUrl(String url) {
+    this.url = url;
   }
-  
+
   public long getScore() {
     return score;
+  }
+
+  public void setScore(long score) {
+    this.score = score;
   }
 
   public Calendar getUpdatedDate() {
