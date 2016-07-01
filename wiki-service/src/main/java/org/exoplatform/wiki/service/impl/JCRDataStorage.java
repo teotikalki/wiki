@@ -6,6 +6,8 @@ import org.chromattic.api.ChromatticSession;
 import org.chromattic.common.IO;
 import org.chromattic.core.api.ChromatticSessionImpl;
 import org.chromattic.ext.ntdef.Resource;
+import org.exoplatform.commons.utils.HTMLSanitizer;
+import org.exoplatform.commons.utils.IOUtil;
 import org.exoplatform.commons.utils.ObjectPageList;
 import org.exoplatform.commons.utils.PageList;
 import org.exoplatform.container.configuration.ConfigurationManager;
@@ -1200,9 +1202,17 @@ public class JCRDataStorage implements DataStorage {
 
     try {
       PageImpl pageImpl = fetchPageImpl(page);
+      if ("text/html".compareTo(attachment.getMimeType()) == 0) {
+        String content = IOUtil.getStreamContentAsString(new ByteArrayInputStream(attachment.getContent()));
+        content = HTMLSanitizer.sanitize(content);
+        attachment.setContent(content.getBytes());
+      }
+
       AttachmentImpl attachmentImpl = pageImpl.createAttachment(attachment.getName(), new Resource(attachment.getMimeType(), "UTF-8", attachment.getContent()));
       attachmentImpl.setTitle(attachment.getTitle());
       attachmentImpl.setCreator(attachment.getCreator());
+    } catch (Exception e) {
+      log.warn("Cannot sanitize attachment " + attachment.getName() + " - Cause : " + e.getMessage());
     } finally {
       mowService.stopSynchronization(created);
     }
